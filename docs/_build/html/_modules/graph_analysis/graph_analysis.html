@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>graph_analysis.graph_analysis &mdash; Classification of brain activity using Synolitic networks 1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Classification of brain activity using Synolitic networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Classification_of_brain_activity_using_Synolitic_networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Classification of brain activity using Synolitic networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">graph_analysis.graph_analysis</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for graph_analysis.graph_analysis</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the functions needed to calculate feathers of the graphs.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">igraph</span> <span class="k">as</span> <span class="nn">ig</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="get_ids_of_weak_voxels"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.get_ids_of_weak_voxels">[docs]</a><span class="k">def</span> <span class="nf">get_ids_of_weak_voxels</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">value_lt</span><span class="o">=</span><span class="n">eps</span><span class="p">)[</span><span class="s2">&quot;flatidvoxel&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_ids_of_edges_of_weak_voxels"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.get_ids_of_edges_of_weak_voxels">[docs]</a><span class="k">def</span> <span class="nf">get_ids_of_edges_of_weak_voxels</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+    <span class="n">voxels_ids</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">value_lt</span><span class="o">=</span><span class="n">eps</span><span class="p">)[</span><span class="s2">&quot;flatidvoxel&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">(</span><span class="n">_source</span><span class="o">=</span><span class="n">voxels_ids</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="delete_edges_of_weak_voxels"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.delete_edges_of_weak_voxels">[docs]</a><span class="k">def</span> <span class="nf">delete_edges_of_weak_voxels</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+    <span class="n">edges_ids</span> <span class="o">=</span> <span class="n">get_ids_of_edges_of_weak_voxels</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">delete_edges</span><span class="p">(</span><span class="n">edges_ids</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="delete_wek_edges"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.delete_wek_edges">[docs]</a><span class="k">def</span> <span class="nf">delete_wek_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">eps_1</span><span class="p">,</span> <span class="n">eps_2</span><span class="p">):</span>
+    <span class="n">ideg</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">(</span><span class="n">value_ge</span><span class="o">=</span><span class="n">eps_1</span><span class="p">)</span>
+    <span class="n">idel</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">(</span><span class="n">value_le</span><span class="o">=</span><span class="n">eps_2</span><span class="p">)</span>
+    <span class="n">ide</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">idel</span><span class="p">,</span> <span class="n">ideg</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">delete_edges</span><span class="p">(</span><span class="n">ide</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="number_of_edges"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.number_of_edges">[docs]</a><span class="k">def</span> <span class="nf">number_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">graph</span><span class="o">.</span><span class="n">ecount</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="number_of_vertices_le_degree"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.number_of_vertices_le_degree">[docs]</a><span class="k">def</span> <span class="nf">number_of_vertices_le_degree</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">_degree_le</span><span class="o">=</span><span class="n">degree</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="number_of_vertices_ge_degree"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.number_of_vertices_ge_degree">[docs]</a><span class="k">def</span> <span class="nf">number_of_vertices_ge_degree</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">_degree_ge</span><span class="o">=</span><span class="n">degree</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="number_of_vertices_eq_degree"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.number_of_vertices_eq_degree">[docs]</a><span class="k">def</span> <span class="nf">number_of_vertices_eq_degree</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">_degree_eq</span><span class="o">=</span><span class="n">degree</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="number_of_components"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.number_of_components">[docs]</a><span class="k">def</span> <span class="nf">number_of_components</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">connected_components</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="number_of_vertices_in_max_component"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.number_of_vertices_in_max_component">[docs]</a><span class="k">def</span> <span class="nf">number_of_vertices_in_max_component</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="n">components</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">connected_components</span><span class="p">()</span>
+    <span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sum_of_edges"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.sum_of_edges">[docs]</a><span class="k">def</span> <span class="nf">sum_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="mean_of_edges"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.mean_of_edges">[docs]</a><span class="k">def</span> <span class="nf">mean_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="median_of_edges"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.median_of_edges">[docs]</a><span class="k">def</span> <span class="nf">median_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="sum_of_edges_gt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.sum_of_edges_gt_x">[docs]</a><span class="k">def</span> <span class="nf">sum_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mean_of_edges_gt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.mean_of_edges_gt_x">[docs]</a><span class="k">def</span> <span class="nf">mean_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">x</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="median_of_edges_gt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.median_of_edges_gt_x">[docs]</a><span class="k">def</span> <span class="nf">median_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">x</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="sum_of_edges_lt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.sum_of_edges_lt_x">[docs]</a><span class="k">def</span> <span class="nf">sum_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mean_of_edges_lt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.mean_of_edges_lt_x">[docs]</a><span class="k">def</span> <span class="nf">mean_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="median_of_edges_lt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.median_of_edges_lt_x">[docs]</a><span class="k">def</span> <span class="nf">median_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="quantile_of_edges"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.quantile_of_edges">[docs]</a><span class="k">def</span> <span class="nf">quantile_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">q</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="quantile_of_edges_lt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.quantile_of_edges_lt_x">[docs]</a><span class="k">def</span> <span class="nf">quantile_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">],</span> <span class="n">q</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="quantile_of_edges_gt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.quantile_of_edges_gt_x">[docs]</a><span class="k">def</span> <span class="nf">quantile_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">x</span><span class="p">],</span> <span class="n">q</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="std_of_edges"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.std_of_edges">[docs]</a><span class="k">def</span> <span class="nf">std_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="std_of_edges_lt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.std_of_edges_lt_x">[docs]</a><span class="k">def</span> <span class="nf">std_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="std_of_edges_gt_x"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.std_of_edges_gt_x">[docs]</a><span class="k">def</span> <span class="nf">std_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">x</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="get_vids_with_edges_weight_lt_q1"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.get_vids_with_edges_weight_lt_q1">[docs]</a><span class="k">def</span> <span class="nf">get_vids_with_edges_weight_lt_q1</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">prob</span><span class="p">):</span>
+    <span class="n">q_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">],</span> <span class="n">prob</span><span class="p">)</span>
+    <span class="n">ideq_1</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">(</span><span class="n">value_le</span><span class="o">=</span><span class="n">q_1</span><span class="p">)</span>
+    <span class="n">idvq_1</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">target</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">ideq_1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">source</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">ideq_1</span><span class="p">]</span>
+    <span class="n">xidvq_1</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">idvq_1</span><span class="p">)[</span><span class="s2">&quot;xid&quot;</span><span class="p">]</span>
+    <span class="n">yidvq_1</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">idvq_1</span><span class="p">)[</span><span class="s2">&quot;yid&quot;</span><span class="p">]</span>
+    <span class="n">zidvq_1</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">idvq_1</span><span class="p">)[</span><span class="s2">&quot;zid&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">xidvq_1</span><span class="p">,</span> <span class="n">yidvq_1</span><span class="p">,</span> <span class="n">zidvq_1</span></div>
+
+
+<div class="viewcode-block" id="get_vids_with_edges_weight_gt_q2"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.get_vids_with_edges_weight_gt_q2">[docs]</a><span class="k">def</span> <span class="nf">get_vids_with_edges_weight_gt_q2</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">prob</span><span class="p">):</span>
+    <span class="n">q_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">([</span><span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">],</span> <span class="n">prob</span><span class="p">)</span>
+    <span class="n">ideq_2</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">es</span><span class="p">(</span><span class="n">value_ge</span><span class="o">=</span><span class="n">q_2</span><span class="p">)</span>
+    <span class="n">idvq_2</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">target</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">ideq_2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">source</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">ideq_2</span><span class="p">]</span>
+    <span class="n">xidvq_2</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">idvq_2</span><span class="p">)[</span><span class="s2">&quot;xid&quot;</span><span class="p">]</span>
+    <span class="n">yidvq_2</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">idvq_2</span><span class="p">)[</span><span class="s2">&quot;yid&quot;</span><span class="p">]</span>
+    <span class="n">zidvq_2</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">(</span><span class="n">idvq_2</span><span class="p">)[</span><span class="s2">&quot;zid&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">xidvq_2</span><span class="p">,</span> <span class="n">yidvq_2</span><span class="p">,</span> <span class="n">zidvq_2</span></div>
+
+
+<div class="viewcode-block" id="graphs_weight_features"><a class="viewcode-back" href="../../graph_analysis.html#graph_analysis.graph_analysis.graphs_weight_features">[docs]</a><span class="k">def</span> <span class="nf">graphs_weight_features</span><span class="p">(</span><span class="n">graph_folder</span><span class="p">,</span> <span class="n">features_file</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculation of graph fetchers.</span>
+
+<span class="sd">    :param graph_folder: path to folder of the graphs</span>
+<span class="sd">    :type graph_folder: str</span>
+<span class="sd">    :param features_file: path to file of features</span>
+<span class="sd">    :type features_file: str</span>
+<span class="sd">    :param r: threshold r for deletion of edges</span>
+<span class="sd">    :type r: float</span>
+<span class="sd">    :param w: threshold w for deletion of edges</span>
+<span class="sd">    :type w: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">graph_folder</span><span class="p">))</span>    
+
+    <span class="nb">sum</span><span class="p">,</span> <span class="n">sumlt</span><span class="p">,</span> <span class="n">sumgt</span><span class="p">,</span>  <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">mean</span><span class="p">,</span> <span class="n">meanlt</span><span class="p">,</span> <span class="n">meangt</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">median</span><span class="p">,</span> <span class="n">medianlt</span><span class="p">,</span> <span class="n">mediangt</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">quantile_1</span><span class="p">,</span> <span class="n">quantile_1lt</span><span class="p">,</span> <span class="n">quantile_1gt</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">quantile_2</span><span class="p">,</span> <span class="n">quantile_2lt</span><span class="p">,</span> <span class="n">quantile_2gt</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">std</span><span class="p">,</span> <span class="n">stdlt</span><span class="p">,</span> <span class="n">stdgt</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">graph_number</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;count:&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">graph_folder</span> <span class="o">+</span> <span class="s2">&quot;/run_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.gml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gml&quot;</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;flatidvoxel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">vs</span><span class="p">[</span><span class="s2">&quot;flatidvoxel&quot;</span><span class="p">]]</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">delete_edges_of_weak_voxels</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">delete_wek_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="o">-</span><span class="n">w</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+
+        <span class="nb">sum</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sum_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>
+        <span class="n">sumlt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sum_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">sumgt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sum_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">mean</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>
+        <span class="n">meanlt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">meangt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">median</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">median_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>
+        <span class="n">medianlt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">median_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">mediangt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">median_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">quantile_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quantile_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">))</span>
+        <span class="n">quantile_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quantile_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">))</span>
+        <span class="n">quantile_1lt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quantile_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">quantile_2lt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quantile_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">quantile_1gt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quantile_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">quantile_2gt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">quantile_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">std</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">std_of_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>
+        <span class="n">stdlt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">std_of_edges_lt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">stdgt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">std_of_edges_gt_x</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;sum&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">,</span> <span class="s2">&quot;sumlt&quot;</span><span class="p">:</span> <span class="n">sumlt</span><span class="p">,</span> <span class="s2">&quot;sumgt&quot;</span><span class="p">:</span> <span class="n">sumgt</span><span class="p">,</span>
+                                  <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">mean</span><span class="p">,</span> <span class="s2">&quot;meanlt&quot;</span><span class="p">:</span> <span class="n">meanlt</span><span class="p">,</span> <span class="s2">&quot;meangt&quot;</span><span class="p">:</span> <span class="n">meangt</span><span class="p">,</span>
+                                  <span class="s2">&quot;median&quot;</span><span class="p">:</span> <span class="n">median</span><span class="p">,</span> <span class="s2">&quot;medianlt&quot;</span><span class="p">:</span> <span class="n">medianlt</span><span class="p">,</span> <span class="s2">&quot;mediangt&quot;</span><span class="p">:</span> <span class="n">mediangt</span><span class="p">,</span>
+                                  <span class="s2">&quot;quantile_1&quot;</span><span class="p">:</span> <span class="n">quantile_1</span><span class="p">,</span> <span class="s2">&quot;quantile_2&quot;</span><span class="p">:</span> <span class="n">quantile_2</span><span class="p">,</span>
+                                  <span class="s2">&quot;quantile_1lt&quot;</span><span class="p">:</span> <span class="n">quantile_1lt</span><span class="p">,</span> <span class="s2">&quot;quantile_2lt&quot;</span><span class="p">:</span> <span class="n">quantile_2lt</span><span class="p">,</span>
+                                  <span class="s2">&quot;quantile_1gt&quot;</span><span class="p">:</span> <span class="n">quantile_1gt</span><span class="p">,</span> <span class="s2">&quot;quantile_2gt&quot;</span><span class="p">:</span> <span class="n">quantile_2gt</span><span class="p">,</span>
+                                  <span class="s2">&quot;std&quot;</span><span class="p">:</span> <span class="n">std</span><span class="p">,</span> <span class="s2">&quot;stdlt&quot;</span><span class="p">:</span> <span class="n">stdlt</span><span class="p">,</span> <span class="s2">&quot;stdgt&quot;</span><span class="p">:</span> <span class="n">stdgt</span><span class="p">})</span>
+    <span class="n">features</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">features_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Vlasenko D.V..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

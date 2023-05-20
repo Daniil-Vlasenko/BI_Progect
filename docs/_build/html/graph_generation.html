@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>graph_generation package &mdash; Classification of brain activity using Synolitic networks 1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="main module" href="main.html" />
+    <link rel="prev" title="graph_analysis package" href="graph_analysis.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Classification of brain activity using Synolitic networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Classification_of_brain_activity_using_Synolitic_networks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classifier_learning.html">classifier_learning package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dimensionality_reduction.html">dimensionality_reduction package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graph_analysis.html">graph_analysis package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">graph_generation package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-graph_generation.graph_generation">graph_generation.graph_generation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-graph_generation">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Classification of brain activity using Synolitic networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Classification_of_brain_activity_using_Synolitic_networks</a></li>
+      <li class="breadcrumb-item active">graph_generation package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/graph_generation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="graph-generation-package">
+<h1>graph_generation package<a class="headerlink" href="#graph-generation-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-graph_generation.graph_generation">
+<span id="graph-generation-graph-generation-module"></span><h2>graph_generation.graph_generation module<a class="headerlink" href="#module-graph_generation.graph_generation" title="Permalink to this headline"></a></h2>
+<p>This module contains the functions needed to reduce time dimension and calculate a^T,
+calculate edges weights and generate graphs.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="graph_generation.graph_generation.edges_calculation">
+<span class="sig-prename descclassname"><span class="pre">graph_generation.graph_generation.</span></span><span class="sig-name descname"><span class="pre">edges_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classifiers_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalars_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graph_generation/graph_generation.html#edges_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graph_generation.graph_generation.edges_calculation" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate edge weight for every two adjacent voxels of one scalar type for both perception and imagery regimes
+for every run of fMRI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>classifiers_folder</strong> (<em>str</em>) – path to the folder where classifiers are</p></li>
+<li><p><strong>scalars_file</strong> (<em>str</em>) – path to the file of scalars</p></li>
+<li><p><strong>shape</strong> (<em>list</em>) – shape of the 3D array a^T</p></li>
+<li><p><strong>edges_file</strong> (<em>str    .</em>) – path to the file of new edge weights</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="graph_generation.graph_generation.graph_delete">
+<span class="sig-prename descclassname"><span class="pre">graph_generation.graph_generation.</span></span><span class="sig-name descname"><span class="pre">graph_delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph_folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graph_generation/graph_generation.html#graph_delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graph_generation.graph_generation.graph_delete" title="Permalink to this definition"></a></dt>
+<dd><p>Delete all graphs in folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>graph_folder</strong> (<em>str</em>) – path to the folder of graphs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="graph_generation.graph_generation.graphs_generation">
+<span class="sig-prename descclassname"><span class="pre">graph_generation.graph_generation.</span></span><span class="sig-name descname"><span class="pre">graphs_generation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalars_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graph_generation/graph_generation.html#graphs_generation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graph_generation.graph_generation.graphs_generation" title="Permalink to this definition"></a></dt>
+<dd><p>Generation of graphs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scalars_file</strong> (<em>str</em>) – path to the file of scalars</p></li>
+<li><p><strong>shape</strong> (<em>list</em>) – shape of the 3D array a^T</p></li>
+<li><p><strong>edges_file</strong> (<em>str</em>) – path to the file of edge weights</p></li>
+<li><p><strong>graph_folder</strong> (<em>str</em>) – path to the folder where graphs will be saved</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="graph_generation.graph_generation.scalarization_1">
+<span class="sig-prename descclassname"><span class="pre">graph_generation.graph_generation.</span></span><span class="sig-name descname"><span class="pre">scalarization_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graph_generation/graph_generation.html#scalarization_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graph_generation.graph_generation.scalarization_1" title="Permalink to this definition"></a></dt>
+<dd><p>Convert time series for each voxel to scalar value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – array of arrays that contain voxel’s values at different points in time.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – T function; 0 - mean, 1 - median, 2 -standard derivation, 3 - variance, 4 - difference between the maximum and minimum, 5 - difference between quantiles, 6 - maximum, 7 - minimum, 8 - quantile 1, 9 - quantile 2</p></li>
+<li><p><strong>q_1</strong> (<em>float</em>) – level of quantile 1</p></li>
+<li><p><strong>q_2</strong> (<em>float</em>) – level of quantile 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of scalars.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="graph_generation.graph_generation.scalarization_2">
+<span class="sig-prename descclassname"><span class="pre">graph_generation.graph_generation.</span></span><span class="sig-name descname"><span class="pre">scalarization_2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graph_generation/graph_generation.html#scalarization_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graph_generation.graph_generation.scalarization_2" title="Permalink to this definition"></a></dt>
+<dd><p>Convert time series for each voxel to scalar value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_file</strong> (<em>str</em>) – path to NIFTI data.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – T function; 0 - mean, 1 - median, 2 -standard derivation, 3 - variance, 4 - difference between the maximum and minimum, 5 - difference between quantiles, 6 - maximum, 7 - minimum, 8 - quantile 1, 9 - quantile 2</p></li>
+<li><p><strong>q_1</strong> (<em>float</em>) – level of quantile 1</p></li>
+<li><p><strong>q_2</strong> (<em>float</em>) – level of quantile 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of scalars</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="graph_generation.graph_generation.scalarization_3">
+<span class="sig-prename descclassname"><span class="pre">graph_generation.graph_generation.</span></span><span class="sig-name descname"><span class="pre">scalarization_3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graph_generation/graph_generation.html#scalarization_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graph_generation.graph_generation.scalarization_3" title="Permalink to this definition"></a></dt>
+<dd><p>Convert time series for each voxel to scalar value and save results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_files</strong> (<em>list</em>) – paths to NIFTI data</p></li>
+<li><p><strong>output_file</strong> (<em>str</em>) – path of output file</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – T function; 0 - mean, 1 - median, 2 -standard derivation, 3 - variance, 4 - difference between the maximum and minimum, 5 - difference between quantiles, 6 - maximum, 7 - minimum, 8 - quantile 1, 9 - quantile 2</p></li>
+<li><p><strong>q_1</strong> (<em>float</em>) – level of quantile 1</p></li>
+<li><p><strong>q_2</strong> (<em>float</em>) – level of quantile 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of scalars</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-graph_generation">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-graph_generation" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="graph_analysis.html" class="btn btn-neutral float-left" title="graph_analysis package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="main.html" class="btn btn-neutral float-right" title="main module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Vlasenko D.V..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
