@@ -1,5 +1,5 @@
 # BI_Progect "Classification of brain activity using Synolitic networks"
-Open docs/index.html to read the documentation of the code.
+Download docs/_build/html and open docs/_build/html/index.html to read the documentation of the code.
 
 ## Propose of the project
 By now, methods of representing fMRI data in the form of graphs have already been used in the tasks of classifying brain activity. But rather simple classical methods, such as Pearson's linear correlation or partial correlation, are used to reflect relationships between brain regions in such graphs. Although these methods reveal the correlation of features, such correlation, by itself, does not provide useful information for classification. In this paper, we propose to eliminate this drawback and refine the methods of data representation. Thus, the work of this paper is to propose and test a method of representing fMRI data in the form of graphs that would reflect information meaningful for subsequent classification about the relationships between brain regions. We have named this method synolithic, as it was inspired by synolithic networks, which allow the application of graph analysis methods to multidimensional complex data. Here we will consider the simplest case, in which we will distinguish between only two brain modes, or, in other words, when the task is binary classification.
