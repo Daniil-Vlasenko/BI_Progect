@@ -28,5 +28,5 @@ So method of representing fMRI data in the form of graphs that would reflect inf
 7. 	Kim B-H and Ye JC. Understanding Graph Isomorphism Network for rs-fMRI Functional Connectivity Analysis. Frontiers in Neuroscience. 2020; 14:630. DOI: 10.3389/fnins.2020.00630. 
 8. 	Nazarenko T, Whitwell HJ, Blyuss O, Zaikin A. Parenclitic and Synolytic Networks Revisited. Frontiers in Genetics. 2021; 12. DOI: 10.3389/fgene.2021.733783. 
 9. 	Horikawa T, Kamitani Y. Generic Object Decoding (fMRI on ImageNet). OpenNeuro. 2019. DOI: 10.18112/openneuro.ds001246.v1.2.1. 
-10. 	Pedregosa et al. Scikit-learn: Machine Learning in Python. Journal of Machine Learning Research. 2011; 12:2825-2830.
+10. Pedregosa et al. Scikit-learn: Machine Learning in Python. Journal of Machine Learning Research. 2011; 12:2825-2830.
 
