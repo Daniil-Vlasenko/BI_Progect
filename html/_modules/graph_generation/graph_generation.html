@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>graph_generation.graph_generation &mdash; Classification of brain activity using Synolitic networks 1 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Classification of brain activity using Synolitic networks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Classification_of_brain_activity_using_Synolitic_networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Classification of brain activity using Synolitic networks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">graph_generation.graph_generation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for graph_generation.graph_generation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the functions needed to reduce time dimension and calculate a^T,</span>
+<span class="sd">calculate edges weights and generate graphs.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">igraph</span> <span class="k">as</span> <span class="nn">ig</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="kn">from</span> <span class="nn">dimensionality_reduction</span> <span class="kn">import</span> <span class="n">dimensionality_reduction</span> <span class="k">as</span> <span class="n">dr</span>
+<span class="kn">from</span> <span class="nn">classifier_learning</span> <span class="kn">import</span> <span class="n">classifier_learning</span> <span class="k">as</span> <span class="n">cl</span>
+
+
+<div class="viewcode-block" id="scalarization_1"><a class="viewcode-back" href="../../graph_generation.html#graph_generation.graph_generation.scalarization_1">[docs]</a><span class="k">def</span> <span class="nf">scalarization_1</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">q_1</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">q_2</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert time series for each voxel to scalar value.</span>
+
+<span class="sd">    :param data: array of arrays that contain voxel&#39;s values at different points in time.</span>
+<span class="sd">    :type data: numpy.ndarray</span>
+<span class="sd">    :param mode: T function; 0 - mean, 1 - median, 2 -standard derivation, 3 - variance, 4 - difference between the maximum and minimum, 5 - difference between quantiles, 6 - maximum, 7 - minimum, 8 - quantile 1, 9 - quantile 2</span>
+<span class="sd">    :type mode: int</span>
+<span class="sd">    :param q_1: level of quantile 1</span>
+<span class="sd">    :type q_1: float</span>
+<span class="sd">    :param q_2: level of quantile 2</span>
+<span class="sd">    :type q_2: float</span>
+<span class="sd">    :return: array of scalars.</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">q_2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">q_1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">q_1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">q_2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid mode.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="scalarization_2"><a class="viewcode-back" href="../../graph_generation.html#graph_generation.graph_generation.scalarization_2">[docs]</a><span class="k">def</span> <span class="nf">scalarization_2</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">q_1</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">q_2</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert time series for each voxel to scalar value.</span>
+
+<span class="sd">    :param input_file: path to NIFTI data.</span>
+<span class="sd">    :type input_file: str</span>
+<span class="sd">    :param mode: T function; 0 - mean, 1 - median, 2 -standard derivation, 3 - variance, 4 - difference between the maximum and minimum, 5 - difference between quantiles, 6 - maximum, 7 - minimum, 8 - quantile 1, 9 - quantile 2</span>
+<span class="sd">    :type mode: int</span>
+<span class="sd">    :param q_1: level of quantile 1</span>
+<span class="sd">    :type q_1: float</span>
+<span class="sd">    :param q_2: level of quantile 2</span>
+<span class="sd">    :type q_2: float</span>
+<span class="sd">    :return: array of scalars</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dr</span><span class="o">.</span><span class="n">_4D_to_2D</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scalarization_1</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">q_1</span><span class="p">,</span> <span class="n">q_2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="scalarization_3"><a class="viewcode-back" href="../../graph_generation.html#graph_generation.graph_generation.scalarization_3">[docs]</a><span class="k">def</span> <span class="nf">scalarization_3</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">q_1</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">q_2</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert time series for each voxel to scalar value and save results.</span>
+
+<span class="sd">    :param input_files: paths to NIFTI data</span>
+<span class="sd">    :type input_files: list</span>
+<span class="sd">    :param output_file: path of output file</span>
+<span class="sd">    :type output_file: str</span>
+<span class="sd">    :param mode: T function; 0 - mean, 1 - median, 2 -standard derivation, 3 - variance, 4 - difference between the maximum and minimum, 5 - difference between quantiles, 6 - maximum, 7 - minimum, 8 - quantile 1, 9 - quantile 2</span>
+<span class="sd">    :type mode: int</span>
+<span class="sd">    :param q_1: level of quantile 1</span>
+<span class="sd">    :type q_1: float</span>
+<span class="sd">    :param q_2: level of quantile 2</span>
+<span class="sd">    :type q_2: float</span>
+<span class="sd">    :return: array of scalars</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">scalarization_2</span><span class="p">(</span><span class="n">input_files</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mode</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_files</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">scalarization_2</span><span class="p">(</span><span class="n">input_files</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mode</span><span class="p">,</span> <span class="n">q_1</span><span class="p">,</span> <span class="n">q_2</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">tmp</span><span class="p">))</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="edges_calculation"><a class="viewcode-back" href="../../graph_generation.html#graph_generation.graph_generation.edges_calculation">[docs]</a><span class="k">def</span> <span class="nf">edges_calculation</span><span class="p">(</span><span class="n">classifiers_folder</span><span class="p">,</span> <span class="n">scalars_file</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">edges_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate edge weight for every two adjacent voxels of one scalar type for both perception and imagery regimes</span>
+<span class="sd">    for every run of fMRI.</span>
+
+<span class="sd">    :param classifiers_folder: path to the folder where classifiers are</span>
+<span class="sd">    :type classifiers_folder: str</span>
+<span class="sd">    :param scalars_file: path to the file of scalars</span>
+<span class="sd">    :type scalars_file: str    </span>
+<span class="sd">    :param shape: shape of the 3D array a^T</span>
+<span class="sd">    :type shape: list</span>
+<span class="sd">    :param edges_file: path to the file of new edge weights</span>
+<span class="sd">    :type edges_file: str    .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scalars_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">scalars_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalars_np</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">number_of_runs</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">number_of_runs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalars_np</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">number_of_edges</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="mi">26</span> <span class="o">*</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">19</span> <span class="o">+</span>
+                           <span class="mi">4</span> <span class="o">*</span> <span class="p">((</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="mi">15</span> <span class="o">+</span>
+                           <span class="mi">2</span> <span class="o">*</span> <span class="p">((</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> 
+                           <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">12</span><span class="p">)</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">edges_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">number_of_edges</span><span class="p">,</span> <span class="n">number_of_runs</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span>    
+
+    <span class="n">count_of_rows</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">neighbors</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">get_set_of_neighbors</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+        <span class="n">voxel_1_id</span> <span class="o">=</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">voxel_2_id</span> <span class="o">=</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;count:&quot;</span><span class="p">,</span> <span class="n">count_of_rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;voxel_1_id:&quot;</span><span class="p">,</span> <span class="n">voxel_1_id</span><span class="p">,</span> <span class="s2">&quot;voxel_2_id:&quot;</span><span class="p">,</span> <span class="n">voxel_2_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;GPC&quot;</span> <span class="ow">in</span> <span class="n">classifiers_folder</span><span class="p">:</span>
+            <span class="n">classifier_file</span> <span class="o">=</span> <span class="n">classifiers_folder</span> <span class="o">+</span> <span class="s2">&quot;/GPC_voxel_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">voxel_1_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_and_voxel_&quot;</span> <span class="o">+</span> \
+                              <span class="nb">str</span><span class="p">(</span><span class="n">voxel_2_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.sav&quot;</span>
+            <span class="n">classifier</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">classifier_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">classifier_file</span> <span class="o">=</span> <span class="n">classifiers_folder</span> <span class="o">+</span> <span class="s2">&quot;/SVC_voxel_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">voxel_1_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_and_voxel_&quot;</span> <span class="o">+</span> \
+                              <span class="nb">str</span><span class="p">(</span><span class="n">voxel_2_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.sav&quot;</span>
+            <span class="n">classifier</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">classifier_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">))</span>
+
+        <span class="n">edges_np</span><span class="p">[</span><span class="n">count_of_rows</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">voxel_1_id</span>
+        <span class="n">edges_np</span><span class="p">[</span><span class="n">count_of_rows</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">voxel_2_id</span>
+
+        <span class="k">if</span> <span class="n">number_of_runs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">&#39;voxel1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">scalars_np</span><span class="p">[</span><span class="n">voxel_1_id</span><span class="p">]],</span> <span class="s1">&#39;voxel2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">scalars_np</span><span class="p">[</span><span class="n">voxel_2_id</span><span class="p">]]})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">&#39;voxel1&#39;</span><span class="p">:</span> <span class="n">scalars_np</span><span class="p">[</span><span class="n">voxel_1_id</span><span class="p">],</span> <span class="s1">&#39;voxel2&#39;</span><span class="p">:</span> <span class="n">scalars_np</span><span class="p">[</span><span class="n">voxel_2_id</span><span class="p">]})</span>
+
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+        <span class="n">edges_np</span><span class="p">[</span><span class="n">count_of_rows</span><span class="p">][</span><span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tmp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>    
+
+        <span class="n">count_of_rows</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">column_per_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sours&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_runs</span><span class="p">)]</span>    
+    <span class="n">edges_df_per</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">edges_np</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">column_per_names</span><span class="p">)</span>    
+    <span class="n">edges_df_per</span> <span class="o">=</span> <span class="n">edges_df_per</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">&quot;sours&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">})</span>    
+    <span class="n">edges_df_per</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="graphs_generation"><a class="viewcode-back" href="../../graph_generation.html#graph_generation.graph_generation.graphs_generation">[docs]</a><span class="k">def</span> <span class="nf">graphs_generation</span><span class="p">(</span><span class="n">scalars_file</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">edges_file</span><span class="p">,</span> <span class="n">graph_folder</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generation of graphs.</span>
+
+<span class="sd">    :param scalars_file: path to the file of scalars</span>
+<span class="sd">    :type scalars_file: str</span>
+<span class="sd">    :param shape: shape of the 3D array a^T</span>
+<span class="sd">    :type shape: list</span>
+<span class="sd">    :param edges_file: path to the file of edge weights</span>
+<span class="sd">    :type edges_file: str</span>
+<span class="sd">    :param graph_folder: path to the folder where graphs will be saved</span>
+<span class="sd">    :type graph_folder: str    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scalars_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">scalars_file</span><span class="p">)</span>
+    <span class="n">edges_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">edges_file</span><span class="p">)</span>    
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalars_np</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">number_of_runs</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">number_of_runs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalars_np</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">number_of_voxels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalars_np</span><span class="p">)</span>
+    <span class="n">id_vertices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_voxels</span><span class="p">)]</span>
+    <span class="n">id_x_vertices</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_voxels</span><span class="p">)]</span>
+    <span class="n">id_y_vertices</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_voxels</span><span class="p">)]</span>
+    <span class="n">id_z_vertices</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">])[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_voxels</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_runs</span><span class="p">):</span>
+        <span class="n">edges_df_new</span> <span class="o">=</span> <span class="n">edges_df</span><span class="p">[[</span><span class="s2">&quot;sours&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]]</span>
+        <span class="n">edges_df_new</span> <span class="o">=</span> <span class="n">edges_df_new</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sours&quot;</span><span class="p">:</span> <span class="s2">&quot;sours&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="s2">&quot;value&quot;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalars_np</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">vertices_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;flat_id_voxel&#39;</span><span class="p">:</span> <span class="n">id_vertices</span><span class="p">,</span> <span class="s2">&quot;x_id&quot;</span><span class="p">:</span> <span class="n">id_x_vertices</span><span class="p">,</span>
+                                                   <span class="s2">&quot;y_id&quot;</span><span class="p">:</span> <span class="n">id_y_vertices</span><span class="p">,</span> <span class="s2">&quot;z_id&quot;</span><span class="p">:</span> <span class="n">id_z_vertices</span><span class="p">,</span>
+                                                   <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">scalars_np</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vertices_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;flat_id_voxel&#39;</span><span class="p">:</span> <span class="n">id_vertices</span><span class="p">,</span> <span class="s2">&quot;x_id&quot;</span><span class="p">:</span> <span class="n">id_x_vertices</span><span class="p">,</span>
+                                                   <span class="s2">&quot;y_id&quot;</span><span class="p">:</span> <span class="n">id_y_vertices</span><span class="p">,</span> <span class="s2">&quot;z_id&quot;</span><span class="p">:</span> <span class="n">id_z_vertices</span><span class="p">,</span>
+                                                   <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">scalars_np</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]})</span>
+
+        <span class="n">g</span> <span class="o">=</span> <span class="n">ig</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">edges_df_new</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vertices</span><span class="o">=</span><span class="n">vertices_df</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">graph_folder</span> <span class="o">+</span> <span class="s2">&quot;/run_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.gml&quot;</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gml&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="graph_delete"><a class="viewcode-back" href="../../graph_generation.html#graph_generation.graph_generation.graph_delete">[docs]</a><span class="k">def</span> <span class="nf">graph_delete</span><span class="p">(</span><span class="n">graph_folder</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delete all graphs in folder.</span>
+
+<span class="sd">    :param graph_folder: path to the folder of graphs</span>
+<span class="sd">    :type graph_folder: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">graph_folder</span> <span class="o">+</span> <span class="s1">&#39;/*&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Vlasenko D.V..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
