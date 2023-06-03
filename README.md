@@ -8,6 +8,11 @@ In this paper, we propose to eliminate this drawback and refine the methods of d
 
 We have named this method synolithic, as it was inspired by synolithic networks, which allow the application of graph analysis methods to multidimensional complex data. Here we will consider the simplest case, in which we will distinguish between only two brain modes, or, in other words, when the task is binary classification.
 
+## Instructions
+Firstly, use dimensionality_reduction.resample() to reduce the size of NIFTI data. Then apply graph_generation.scalarization_3() to the new data to calculate values of vertices and  use classifier_learning.SVM_learning() to teach classifiers that will calculate weights of edges in graphs. Then use graph_generation.edges_calculation() to calculate weights of edges. Now you can construct graphs with function graph_generation.graphs_generation(). Finally, use graph_analysis.graphs_weight_features() to calculate properties of the graphs. 
+
+Use these steps to teach your classifier of properties and for final classification.
+
 ## Result of the project
 The method was implemented and tested with the [following data](https://openneuro.org/datasets/ds001246/versions/1.2.1). There are two modes in which the subject's brain can function. In the first mode, the subject sees 55 blocks sequentially, 50 of which are different images, 5 of which repeat the previous picture. If the subject sees a repeating picture, he must press the button. This is done to keep the subject's attention. In the second mode, the subject is asked to imagen 25 objects sequentially. After each object is imagined, the subject rates on a five-point scale the degree of clarity of the image he or she imagined by pressing the buttons. Five subjects participated in the data collection. Thus, 24 fMRIs in visual perception mode and 20 fMRIs in memory-based imaging mode were taken from each subject. The sample was divided so that 30% of the sample of each mode fell into the test sample and 70% fell into the training sample. 
 
